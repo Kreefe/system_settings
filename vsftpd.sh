@@ -1,7 +1,12 @@
 #!/bin/bash
-apt install vsftpd
 
-echo -E "# Разрешить локальным пользователям входить в систему
+# Установка vsftpd
+sudo apt update
+sudo apt install -y vsftpd
+
+# Конфигурация vsftpd
+sudo bash -c 'cat <<EOF > /etc/vsftpd.conf
+# Разрешить локальным пользователям входить в систему
 local_enable=YES
 
 # Разрешить запись локальным пользователям
@@ -46,7 +51,7 @@ listen=YES
 listen_ipv6=NO
 
 # Настройка доступа к домашним директориям
-user_sub_token=$USER
+user_sub_token=\$USER
 local_root=/
 
 # Настройки таймаутов
@@ -65,11 +70,10 @@ ssl_enable=NO
 
 # Подключение к файлу списка пользователей
 userlist_file=/etc/vsftpd.user_list
-" > /etc/vsftpd.conf
+EOF'
 
-
-echo -E "# /etc/ftpusers: list of users disallowed FTP access. See ftpusers(5).
-
+# Конфигурация пользователей, которым запрещен FTP доступ
+sudo bash -c 'cat <<EOF > /etc/ftpusers
 daemon
 bin
 sys
@@ -81,4 +85,10 @@ mail
 news
 uucp
 nobody
-" > /etc/ftpusers
+EOF'
+
+# Создание и настройка файла списка пользователей для vsftpd
+sudo bash -c 'echo "root" > /etc/vsftpd.user_list'
+
+# Перезапуск vsftpd, чтобы применить изменения
+sudo systemctl restart vsftpd
