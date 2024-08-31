@@ -22,7 +22,7 @@ function validate_ip() {
 
 # Установка vsftpd
 echo -e "\033[32mОбновление списка пакетов...\033[0m"
-sudo apt update
+sudo apt update -qq
 
 echo -e "\033[32mУстановка vsftpd...\033[0m"
 if ! dpkg -l | grep -q vsftpd; then
