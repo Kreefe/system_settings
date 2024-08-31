@@ -4,6 +4,8 @@
 sudo apt update
 sudo apt install -y vsftpd
 
+read -p "Введите IP-адрес для параметра pasv_address: " ip_address
+
 # Конфигурация vsftpd
 sudo bash -c 'cat <<EOF > /etc/vsftpd.conf
 # Разрешить локальным пользователям входить в систему
@@ -25,7 +27,7 @@ allow_writeable_chroot=YES
 pasv_enable=YES
 pasv_min_port=10000
 pasv_max_port=10100
-pasv_address=109.120.179.53
+pasv_address=$ip_address
 
 # Настройки маски прав для создаваемых файлов и директорий
 local_umask=022
