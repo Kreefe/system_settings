@@ -1,12 +1,28 @@
 #!/bin/bash
 
+# Функция для проверки правильности IP-адреса
+function validate_ip() {
+    local ip=$1
+    if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        return 0
+    else
+        echo "Ошибка: Неверный IP-адрес."
+        exit 1
+    fi
+}
+
 # Установка vsftpd
+echo "Обновление списка пакетов..."
 sudo apt update
+
+echo "Установка vsftpd..."
 sudo apt install -y vsftpd
 
 read -p "Введите IP-адрес для параметра pasv_address: " ip_address
+validate_ip $ip_address
 
 # Конфигурация vsftpd
+echo "Настройка конфигурации vsftpd..."
 sudo bash -c "cat <<EOF > /etc/vsftpd.conf
 # Разрешить локальным пользователям входить в систему
 local_enable=YES
@@ -75,6 +91,7 @@ userlist_file=/etc/vsftpd.user_list
 EOF"
 
 # Конфигурация пользователей, которым запрещен FTP доступ
+echo "Настройка списка пользователей для запрещенного доступа..."
 sudo bash -c 'cat <<EOF > /etc/ftpusers
 daemon
 bin
@@ -90,7 +107,11 @@ nobody
 EOF'
 
 # Создание и настройка файла списка пользователей для vsftpd
+echo "Создание списка пользователей для vsftpd..."
 sudo bash -c 'echo "root" > /etc/vsftpd.user_list'
 
 # Перезапуск vsftpd, чтобы применить изменения
+echo "Перезапуск службы vsftpd..."
 sudo systemctl restart vsftpd
+
+echo "Настройка завершена!"
