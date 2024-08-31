@@ -7,7 +7,7 @@ sudo apt install -y vsftpd
 read -p "Введите IP-адрес для параметра pasv_address: " ip_address
 
 # Конфигурация vsftpd
-sudo bash -c 'cat <<EOF > /etc/vsftpd.conf
+sudo bash -c "cat <<EOF > /etc/vsftpd.conf
 # Разрешить локальным пользователям входить в систему
 local_enable=YES
 
@@ -72,7 +72,7 @@ ssl_enable=NO
 
 # Подключение к файлу списка пользователей
 userlist_file=/etc/vsftpd.user_list
-EOF'
+EOF"
 
 # Конфигурация пользователей, которым запрещен FTP доступ
 sudo bash -c 'cat <<EOF > /etc/ftpusers
