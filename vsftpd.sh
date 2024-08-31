@@ -1,9 +1,18 @@
 #!/bin/bash
 
+set -e
+
 # Функция для проверки правильности IP-адреса
 function validate_ip() {
     local ip=$1
     if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        IFS='.' read -r -a octets <<< "$ip"
+        for octet in "${octets[@]}"; do
+            if ((octet < 0 || octet > 255)); then
+                echo -e "\033[31mОшибка: Неверный IP-адрес.\033[0m"
+                exit 1
+            fi
+        done
         return 0
     else
         echo -e "\033[31mОшибка: Неверный IP-адрес.\033[0m"
@@ -16,14 +25,18 @@ echo -e "\033[32mОбновление списка пакетов...\033[0m"
 sudo apt update
 
 echo -e "\033[32mУстановка vsftpd...\033[0m"
-sudo apt install -y vsftpd
+if ! dpkg -l | grep -q vsftpd; then
+    sudo apt install -y vsftpd
+else
+    echo -e "\033[33mvsftpd уже установлен.\033[0m"
+fi
 
 read -p "$(echo -e "\033[32mВведите IP-адрес для параметра pasv_address: \033[0m")" ip_address
-validate_ip $ip_address
+validate_ip "$ip_address"
 
 # Конфигурация vsftpd
 echo -e "\033[32mНастройка конфигурации vsftpd...\033[0m"
-sudo bash -c "cat <<EOF > /etc/vsftpd.conf
+sudo tee /etc/vsftpd.conf > /dev/null <<EOF
 # Разрешить локальным пользователям входить в систему
 local_enable=YES
 
@@ -88,11 +101,11 @@ ssl_enable=NO
 
 # Подключение к файлу списка пользователей
 userlist_file=/etc/vsftpd.user_list
-EOF"
+EOF
 
 # Конфигурация пользователей, которым запрещен FTP доступ
 echo -e "\033[32mНастройка списка пользователей для запрещенного доступа...\033[0m"
-sudo bash -c 'cat <<EOF > /etc/ftpusers
+sudo tee /etc/ftpusers > /dev/null <<EOF
 daemon
 bin
 sys
@@ -104,11 +117,11 @@ mail
 news
 uucp
 nobody
-EOF'
+EOF
 
 # Создание и настройка файла списка пользователей для vsftpd
 echo -e "\033[32mСоздание списка пользователей для vsftpd...\033[0m"
-sudo bash -c 'echo "root" > /etc/vsftpd.user_list'
+echo "root" | sudo tee /etc/vsftpd.user_list > /dev/null
 
 # Перезапуск vsftpd, чтобы применить изменения
 echo -e "\033[32mПерезапуск службы vsftpd...\033[0m"
