@@ -15,7 +15,7 @@ EOF
 
 # Установка vsftpd
 echo -e "\033[32mОбновление списка пакетов...\033[0m"
-sudo apt update -qq
+sudo apt update > /dev/null
 
 echo -e "\033[32mУстановка vsftpd...\033[0m"
 if ! dpkg -l | grep -q vsftpd; then
