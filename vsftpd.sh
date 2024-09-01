@@ -2,23 +2,10 @@
 
 set -e
 
-# Функция для проверки правильности IP-адреса
-function validate_ip() {
-    local ip=$1
-    if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        IFS='.' read -r -a octets <<< "$ip"
-        for octet in "${octets[@]}"; do
-            if ((octet < 0 || octet > 255)); then
-                echo -e "\033[31mОшибка: Неверный IP-адрес.\033[0m"
-                exit 1
-            fi
-        done
-        return 0
-    else
-        echo -e "\033[31mОшибка: Неверный IP-адрес.\033[0m"
-        exit 1
-    fi
-}
+# Получаем IP-адрес автоматически
+ip_address=$(hostname -I | awk '{print $1}')
+
+
 
 # Установка vsftpd
 echo -e "\033[32mОбновление списка пакетов...\033[0m"
