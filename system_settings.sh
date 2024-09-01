@@ -9,7 +9,6 @@ ip_address=$(hostname -I | awk '{print $1}')
 echo -e "\033[32mНастройка автоматического подтверждения для APT...\033[0m"
 sudo tee /etc/apt/apt.conf.d/90forceyes > /dev/null <<EOF
 APT::Get::Assume-Yes "true";
-APT::Get::force-yes "true";
 EOF
 
 
