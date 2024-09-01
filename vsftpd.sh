@@ -18,8 +18,6 @@ else
     echo -e "\033[33mvsftpd уже установлен.\033[0m"
 fi
 
-read -p "$(echo -e "\033[32mВведите IP-адрес для параметра pasv_address: \033[0m")" ip_address
-validate_ip "$ip_address"
 
 # Конфигурация vsftpd
 echo -e "\033[32mНастройка конфигурации vsftpd...\033[0m"
