@@ -118,3 +118,4 @@ echo -e "\033[32mПерезапуск службы vsftpd...\033[0m"
 sudo systemctl restart vsftpd
 
 echo -e "\033[32mНастройка завершена!\033[0m"
+echo -e "\033[32mСоздана С любовью!\033[0m"
